@@ -28,10 +28,14 @@ function main() {
 }
 
 function goReorg() {
+
   var insertReorgDiv = document.getElementById("insertReorgDiv");
   insertReorgDiv = insertReorgDiv ?? document.createElement('div');
   insertReorgDiv.id = 'insertReorgDiv';
   insertReorgDiv.innerHTML = "";
+  var entryPoint = document.getElementById("configTableDiv");
+  entryPoint.after(insertReorgDiv)
+
   origine = getPositionTrolls();
   let vueBrute = getVueBrute();
   let vueTriee = vueBrute.sort(triVueBrute);
@@ -366,7 +370,7 @@ function addConfigTable() {
 
 function addVueReorg(vueTriee) {
 
-
+  const insertReorgDiv = document.getElementById('insertReorgDiv');
 
   [nbColonnes, colonnesArray] = getColonnes(vueTriee);
 
@@ -383,7 +387,6 @@ function addVueReorg(vueTriee) {
     "Niv": "niv"
   };
 
-  var entryPoint = document.getElementById("configTableDiv");
 
 
   var reorgTable = document.createElement('table');
