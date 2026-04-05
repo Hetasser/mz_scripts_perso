@@ -174,7 +174,7 @@ function addConfigTable() {
 
   var reorgConfigTable = document.createElement('table');
   var reorgConfigTr = document.createElement('tr');
-  reorgConfigTr.class = 'mh_tdpage';
+  reorgConfigTr.className = 'mh_tdpage';
   // activation ou non de la reorg
   var reorgApplyTd = document.createElement('td');
   reorgApplyTd.style = "display: table-cell;";
@@ -416,5 +416,4 @@ function addVueReorg(vueTriee) {
   });
 
   insertReorgDiv.append(reorgTable);
-  entryPoint.after(insertReorgDiv);
 }
