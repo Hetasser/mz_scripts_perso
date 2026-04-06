@@ -28,11 +28,41 @@ function main() {
 }
 
 function goReorg() {
+  var config = getConfig();
 
   var insertReorgDiv = document.getElementById("insertReorgDiv");
   insertReorgDiv = insertReorgDiv ?? document.createElement('div');
   insertReorgDiv.id = 'insertReorgDiv';
   insertReorgDiv.innerHTML = "";
+  insertReorgDiv.className = "collapsible-wrap mh_tdtitre large";
+
+  if (!(config.activeReorgChecked == 'true')) {
+    return;
+  }
+
+  var reorgHeaderNav = document.createElement('nav');
+  reorgHeaderNav.id = 'reorgNav';
+  reorgHeaderNav.innerHTML = 'R\u00e9org | <a href="#monstres">Monstres</a> | <a href="#trolls">Tr\u00f5lls</a> | <a href="#tresors">Tr\u00e9sors</a> | <a href="#champignons">Champignons</a> | <a href="#lieux">Lieux</a> |<a href="#cenotaphes">C\u00e9notaphes</a>';
+  insertReorgDiv.append(reorgHeaderNav);
+
+  var inputToggleReorg = document.createElement('input');
+  inputToggleReorg.id = 'toggle_reorg';
+  inputToggleReorg.type = 'checkbox';
+  inputToggleReorg.checked = true;
+  inputToggleReorg.className = 'toggle';
+  insertReorgDiv.append(inputToggleReorg);
+
+  var labelToggleReorg = document.createElement('label');
+  labelToggleReorg.className = 'lbl-toggle';
+  labelToggleReorg.setAttribute('for', 'toggle_reorg');
+  labelToggleReorg.append(document.createTextNode('REORG'));
+  insertReorgDiv.append(labelToggleReorg);
+
+  var collapsibleReorgDiv = document.createElement('div');
+  collapsibleReorgDiv.className = 'collapsible-content';
+  collapsibleReorgDiv.id = 'collapsibleReorgDiv';
+  insertReorgDiv.append(collapsibleReorgDiv);
+
   var entryPoint = document.getElementById("configTableDiv");
   entryPoint.after(insertReorgDiv)
 
@@ -85,7 +115,19 @@ function calculeDistance(objet1, origine) {
 
 function getColonnes(vueReorg) {
   var nbColonnes = 0;
-  var nomColonnes = [];
+  var nomColonnes = [
+    "Dist.",
+    "Actions",
+    "Ref.",
+    "Nom",
+    "Race",
+    "Niv.",
+    "Guilde",
+    "X",
+    "Y",
+    "N",
+  ];
+;
   vueReorg.forEach(objet => {
     if (Object.keys(objet).length > nbColonnes) {
       nbColonnes = Object.keys(objet).length;
@@ -95,7 +137,7 @@ function getColonnes(vueReorg) {
   columnsHeadersList = Array.from(document.getElementsByClassName("footable-header"));
   columnsHeadersList.forEach(headerList => {
     Array.from(headerList.cells).forEach(function (columnTd, indexTd) {
-      if (nomColonnes.indexOf(columnTd.outerText) < 0) { nomColonnes.splice(indexTd + 1, 0, columnTd.outerText) }
+      if (nomColonnes.indexOf(columnTd.outerText) < 0) { nomColonnes.push(columnTd.outerText); }
     });
   });
   return [nbColonnes, nomColonnes];
@@ -106,12 +148,12 @@ function triVueBrute(objet1, objet2) {
   let objectTypes = ["monstres", "trolls", "tresors", "champignons", "lieux", "cenotaphes"];
   if (calculeDistance(objet1, origine) < calculeDistance(objet2, origine)) { return -1; }
   if (calculeDistance(objet1, origine) > calculeDistance(objet2, origine)) { return 1; }
-  if (objet1.x < objet1.x ) { return -1; }
-  if (objet1.x > objet2.x ) { return 1; }
-  if (objet1.y < objet1.y ) { return -1; }
-  if (objet1.y > objet2.y ) { return 1; }
-  if (objet1.n < objet1.n ) { return -1; }
-  if (objet1.n > objet2.n ) { return 1; }
+  if (objet1.x < objet1.x) { return -1; }
+  if (objet1.x > objet2.x) { return 1; }
+  if (objet1.y < objet1.y) { return -1; }
+  if (objet1.y > objet2.y) { return 1; }
+  if (objet1.n < objet1.n) { return -1; }
+  if (objet1.n > objet2.n) { return 1; }
   if (objectTypes.indexOf(objet1.type) < objectTypes.indexOf(objet2.type)) { return -1; }
   if (objectTypes.indexOf(objet1.type) > objectTypes.indexOf(objet2.type)) { return 1; }
   if (objet1.id < objet2.id) { return -1; }
@@ -173,11 +215,13 @@ function addConfigTable() {
   insertDiv.id = 'configTableDiv';
 
   var reorgConfigTable = document.createElement('table');
+  reorgConfigTable.className = 'mh_tdborder';
   var reorgConfigTr = document.createElement('tr');
   reorgConfigTr.className = 'mh_tdpage';
   // activation ou non de la reorg
   var reorgApplyTd = document.createElement('td');
   reorgApplyTd.style = "display: table-cell;";
+  reorgApplyTd.className = 'mh_tdpage';
 
   var reorgApplyLabel = document.createElement('label');
   reorgApplyLabel.textContent = 'Activer la reorg';
@@ -217,6 +261,7 @@ function addConfigTable() {
   reorgApplyMonstresLength.value = isNaN(config["distanceReorgMonstres"]) ? 5 : config["distanceReorgMonstres"];
   reorgApplyMonstresTd.append(reorgApplyMonstresLength);
 
+  reorgApplyMonstresTd.className = 'mh_tdpage';
   reorgConfigTr.append(reorgApplyMonstresTd);
 
   // distance et activation ou non de la reorg aux trolls 
@@ -243,6 +288,7 @@ function addConfigTable() {
   reorgApplyTrollsLength.value = isNaN(config["distanceReorgTrolls"]) ? 5 : config["distanceReorgTrolls"];
   reorgApplyTrollsTd.append(reorgApplyTrollsLength);
 
+  reorgApplyTrollsTd.className = 'mh_tdpage';
   reorgConfigTr.append(reorgApplyTrollsTd);
 
   // distance et activation ou non de la reorg aux tresors 
@@ -269,6 +315,7 @@ function addConfigTable() {
   reorgApplyTresorsLength.value = isNaN(config["distanceReorgTresors"]) ? 5 : config["distanceReorgTresors"];
   reorgApplyTresorsTd.append(reorgApplyTresorsLength);
 
+  reorgApplyTresorsTd.className = 'mh_tdpage';
   reorgConfigTr.append(reorgApplyTresorsTd);
 
   // distance et activation ou non de la reorg aux champignons 
@@ -295,6 +342,7 @@ function addConfigTable() {
   reorgApplyChampignonsLength.value = isNaN(config["distanceReorgChampignons"]) ? 5 : config["distanceReorgChampignons"];
   reorgApplyChampignonsTd.append(reorgApplyChampignonsLength);
 
+  reorgApplyChampignonsTd.className = 'mh_tdpage';
   reorgConfigTr.append(reorgApplyChampignonsTd);
 
   // distance et activation ou non de la reorg aux lieux 
@@ -321,6 +369,7 @@ function addConfigTable() {
   reorgApplyLieuxLength.value = isNaN(config["distanceReorgLieux"]) ? 5 : config["distanceReorgLieux"];
   reorgApplyLieuxTd.append(reorgApplyLieuxLength);
 
+  reorgApplyLieuxTd.className = 'mh_tdpage';
   reorgConfigTr.append(reorgApplyLieuxTd);
 
   // distance et activation ou non de la reorg aux cenotaphes 
@@ -347,6 +396,7 @@ function addConfigTable() {
   reorgApplyCenotaphesLength.value = isNaN(config["distanceReorgCenotaphes"]) ? 5 : config["distanceReorgCenotaphes"];
   reorgApplyCenotaphesTd.append(reorgApplyCenotaphesLength);
 
+  reorgApplyCenotaphesTd.className = 'mh_tdpage';
   reorgConfigTr.append(reorgApplyCenotaphesTd);
 
   // et le submit
@@ -360,6 +410,7 @@ function addConfigTable() {
 
   reorgApplySubmitTd.append(reorgButtonSubmit);
 
+  reorgApplySubmitTd.className = 'mh_tdpage';
   reorgConfigTr.append(reorgApplySubmitTd);
 
   reorgConfigTable.append(reorgConfigTr);
@@ -370,7 +421,7 @@ function addConfigTable() {
 
 function addVueReorg(vueTriee) {
 
-  const insertReorgDiv = document.getElementById('insertReorgDiv');
+  const insertReorgDiv = document.getElementById('collapsibleReorgDiv');
 
   [nbColonnes, colonnesArray] = getColonnes(vueTriee);
 
@@ -384,13 +435,16 @@ function addVueReorg(vueTriee) {
     "Ref.": "id",
     "Type": "type",
     "Guilde": "guilde",
-    "Niv": "niv"
+    "Niv.": "niv",
+    "Race" : "race"
   };
 
 
 
   var reorgTable = document.createElement('table');
+  reorgTable.className = 'mh_tdborder'
   var reorgTitlesTr = document.createElement('tr');
+  reorgTitlesTr.className = 'mh_tdtitre';
 
   colonnesArray.forEach(nomColonne => {
     colonneTd = document.createElement('td');
@@ -402,13 +456,19 @@ function addVueReorg(vueTriee) {
 
   reorgTable.append(reorgTitlesTr);
 
+  var compteurAlternate = 0
+  var lastElement = getPositionTrolls();
+
   vueTriee.forEach(elementVue => {
     elementTr = document.createElement('tr');
+    elementTr.className = 'mh_tdtitre';
+    if (elementVue.x != lastElement.x || elementVue.y != lastElement.y || elementVue.n != lastElement.n) { compteurAlternate++; }
+    lastElement = elementVue;
     colonnesArray.forEach(nomColonne => {
       elementTd = document.createElement('td');
+      elementTd.className = compteurAlternate % 2 == 0 ? 'mh_tdpage' : 'mh_tdtitre';
       var elementValue = elementVue[translateColumns[nomColonne.normalize("NFD").replace(/[\u0300-\u036f]/g, "")]] ?? "";
       const elementContent = elementValue.value ?? elementValue;
-
       elementTd.insertAdjacentHTML('beforeend', elementContent);
       elementTr.append(elementTd);
     });
